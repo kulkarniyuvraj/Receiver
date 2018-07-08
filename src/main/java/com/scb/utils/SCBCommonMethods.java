@@ -2,7 +2,7 @@ package com.scb.utils;
 
 import java.time.LocalDateTime;
 
-import org.hamcrest.text.IsEmptyString;
+//import org.hamcrest.text.IsEmptyString;
 import org.springframework.stereotype.Component;
 
 import com.scb.model.CustomerRequest;
@@ -44,8 +44,8 @@ public class SCBCommonMethods {
 	public boolean isValidateCustomerRequest(CustomerRequest customerRequest) {
 		if(null == customerRequest){
 			return false;
-		} else if(customerRequest.getCustomerName().isEmpty() ){
-			return false;			
+			/*} else if(customerRequest.getCustomerName().isEmpty() ){
+			return false;*/			
 		} else if(customerRequest.getCustomerId() == 0 ){
 			return false;
 		}else if("USA".equals(customerRequest.getCustomerRegion())){

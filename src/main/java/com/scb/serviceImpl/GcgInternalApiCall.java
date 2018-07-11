@@ -99,12 +99,12 @@ public class GcgInternalApiCall {
 	}
 
 	public ResponseEntity<CustomerResponse> msDownStreamCall(CustomerRequestData customerRequestData) {
-		ResponseEntity<CustomerResponse> responseOfCustomerApi = null;
+		ResponseEntity<CustomerRequestData> responseOfCustomerApi = null;
 		//ResponseEntity<CustomerRequestData> responseCustomerRequestData = null;
 		try{
 			HttpEntity<CustomerRequestData> entity = new HttpEntity<CustomerRequestData>(customerRequestData);
 			responseOfCustomerApi = restTemplate.exchange(customerConfig.getDownStreamURL(), HttpMethod.POST, entity,
-					CustomerResponse.class);
+					CustomerRequestData.class);
 		}catch (HttpClientErrorException | HttpServerErrorException httpClientOrServerEx) {
 			MsErrorLog msErrorLog = commonMethods.getErrorLogDetails(httpClientOrServerEx);
 			msErrorLog.setErrorCode(httpClientOrServerEx.getStatusCode().toString());
@@ -128,7 +128,9 @@ public class GcgInternalApiCall {
 			return new ResponseEntity<CustomerResponse>( commonMethods.getErrorResponse("Problem While calling downstream api"), HttpStatus.BAD_GATEWAY);
 			
 		}
-		return responseOfCustomerApi;
+		//return responseOfCustomerApi;
+		log.debug("Downstream response: "+responseOfCustomerApi.getBody().toString());
+		return new  ResponseEntity<CustomerResponse>(commonMethods.getSuccessResponse(responseOfCustomerApi.getBody()), HttpStatus.OK);
 	}
 
 }

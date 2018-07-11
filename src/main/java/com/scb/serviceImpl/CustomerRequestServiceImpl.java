@@ -34,19 +34,14 @@ public class CustomerRequestServiceImpl implements CustomerRequestService {
 		}
 		ResponseEntity<CustomerResponse> customerResponseFromPersistDb = gcgInternalApiCall
 				.msCustomerPersistApiCall(customerRequestData);
-		CustomerRequestData responseFromDownStream = null;
+		ResponseEntity<CustomerResponse> customerResponseFromDownStream = null;
 		if (customerResponseFromPersistDb.getBody().getResponseCode() == 200) {
-			ResponseEntity<CustomerResponse> customerResponseFromDownStream = gcgInternalApiCall
+			customerResponseFromDownStream = gcgInternalApiCall
 					.msDownStreamCall(customerResponseFromPersistDb.getBody().getCustomerRequestData());
-			if (customerResponseFromDownStream.getBody().getResponseCode() != 200) {
-				return customerResponseFromDownStream.getBody();
-			}
 		} else {
 			return customerResponseFromPersistDb.getBody();
-			// return commonMethods.getErrorResponse("Error While calling
-			// persister");
 		}
-		return commonMethods.getSuccessResponse(responseFromDownStream);
+		return  customerResponseFromDownStream.getBody();
 	}
 
 }

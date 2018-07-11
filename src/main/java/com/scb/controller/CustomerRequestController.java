@@ -31,7 +31,7 @@ public class CustomerRequestController {
 			customerResponse = customerRequestService.customerRequestHandleService(customerRequest);
 		} else {
 			log.info(" Validation failed");
-			return commonMethods.getErrorResponse("Request Validation Error");
+			customerResponse = commonMethods.getErrorResponse("Request Validation Error");
 		}
 		log.info("Response: "+customerResponse.toString());
 		return customerResponse;
@@ -41,7 +41,7 @@ public class CustomerRequestController {
 	public CustomerRequest customerRequestHandleExampleRequest() {
 
 		return CustomerRequest.builder().customerAccType("Saving").customerId(22).customerName("Test Customer")
-				.customerRegion("India").build();
+				.customerRegion("India").corelationId(200).build();
 		// return
 		// customerRequestService.customerRequestHandleService(customerRequest);
 

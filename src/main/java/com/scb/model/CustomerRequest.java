@@ -15,4 +15,5 @@ public class CustomerRequest {
 	private int serviceId;
 	private String customerAccType;
 	private String customerRegion;
+	private long corelationId;
 }

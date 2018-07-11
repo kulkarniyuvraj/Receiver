@@ -1,12 +1,8 @@
 package com.scb.model;
 
-import java.time.LocalDateTime;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import java.io.Serializable;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -18,23 +14,29 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Entity @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder @XmlRootElement @XmlAccessorType(XmlAccessType.FIELD) 
-public class CustomerRequestData {
-	@Column
+ @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder @XmlRootElement @XmlAccessorType(XmlAccessType.FIELD) 
+public class CustomerRequestData implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1125749775288601451L;
+	//@Column
 	private long customerId;
-	@Column
+	//@Column
 	private String customerName;
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	//@Id
+	//@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int serviceId;
-	@Column
+	//@Column
 	private String customerAccType;
-	@Column
+	//@Column
 	private String customerRegion;
-	@Column 
+	//@Column 
 	private String timeStamp;
-	
-	
-	
-
+	//@Column
+	private long corelationId;
+	//@Column
+	private long transactionId;
+	//@Column
+	private String downStreamResponse;
 }

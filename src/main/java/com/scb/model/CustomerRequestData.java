@@ -35,7 +35,7 @@ public class CustomerRequestData implements Serializable {
 	//@Column 
 	private String timeStamp;
 	//@Column
-	private long corelationId;
+	private long correlationId;
 	//@Column
 	private long transactionId;
 	//@Column

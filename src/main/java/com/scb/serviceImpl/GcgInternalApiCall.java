@@ -11,9 +11,10 @@ import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import com.scb.config.CustomerConfig;
-import com.scb.model.AuditLog;
 import com.scb.model.CustomerRequestData;
 import com.scb.model.CustomerResponse;
+import com.scb.model.CustomerValidateResponse;
+import com.scb.model.MsAuditLog;
 import com.scb.model.MsErrorLog;
 import com.scb.utils.SCBCommonMethods;
 
@@ -30,13 +31,13 @@ public class GcgInternalApiCall {
 	@Autowired
 	private SCBCommonMethods commonMethods;
 
-	public ResponseEntity<AuditLog> msAuditLogApiCall(AuditLog auditLog) {
-		ResponseEntity<AuditLog> responseAuditLog = null;
+	public ResponseEntity<MsAuditLog> msAuditLogApiCall(MsAuditLog auditLog) {
+		ResponseEntity<MsAuditLog> responseAuditLog = null;
 		try {
 			log.debug("GCG internal call audit");
-			HttpEntity<AuditLog> entity = new HttpEntity<AuditLog>(auditLog);
+			HttpEntity<MsAuditLog> entity = new HttpEntity<MsAuditLog>(auditLog);
 			responseAuditLog = restTemplate.exchange(customerConfig.getAuditLogURL(), HttpMethod.POST, entity,
-					AuditLog.class);
+					MsAuditLog.class);
 		} catch (HttpClientErrorException | HttpServerErrorException httpClientOrServerEx) {
 			MsErrorLog msErrorLog = commonMethods.getErrorLogDetails(httpClientOrServerEx);
 			msErrorLog.setErrorCode(httpClientOrServerEx.getStatusCode().toString());
@@ -131,6 +132,46 @@ public class GcgInternalApiCall {
 		//return responseOfCustomerApi;
 		log.debug("Downstream response: "+responseOfCustomerApi.getBody().toString());
 		return new  ResponseEntity<CustomerResponse>(commonMethods.getSuccessResponse(responseOfCustomerApi.getBody()), HttpStatus.OK);
+	}
+	
+	public ResponseEntity<CustomerResponse> msValidatorCall(CustomerRequestData customerRequestData) {
+		ResponseEntity<CustomerValidateResponse> responseOfCustomerApi = null;
+		//ResponseEntity<CustomerRequestData> responseCustomerRequestData = null;
+		try{
+			HttpEntity<CustomerRequestData> entity = new HttpEntity<CustomerRequestData>(customerRequestData);
+			responseOfCustomerApi = restTemplate.exchange(customerConfig.getCustomerValidatorURL(), HttpMethod.POST, entity,
+					CustomerValidateResponse.class);
+		}catch (HttpClientErrorException | HttpServerErrorException httpClientOrServerEx) {
+			MsErrorLog msErrorLog = commonMethods.getErrorLogDetails(httpClientOrServerEx);
+			msErrorLog.setErrorCode(httpClientOrServerEx.getStatusCode().toString());
+			msErrorLog.setUuid(customerRequestData.getTransactionId());
+			msErrorLog.setTimeStamp(customerRequestData.getTimeStamp());
+			if (HttpStatus.INTERNAL_SERVER_ERROR.equals(httpClientOrServerEx.getStatusCode())) {
+				msErrorLogApiCall(msErrorLog);
+				return new ResponseEntity<CustomerResponse>( commonMethods.getErrorResponse("Problem While calling validator api"), HttpStatus.BAD_GATEWAY);
+				
+				// retry logic goes here
+			} else {
+				return new ResponseEntity<CustomerResponse>( commonMethods.getErrorResponse("Problem While calling validator api"), HttpStatus.BAD_GATEWAY);
+				
+				// do something
+			}
+		} catch (Exception e) {
+			MsErrorLog msErrorLog = commonMethods.getErrorLogDetails(e);
+			msErrorLog.setUuid(customerRequestData.getTransactionId());
+			msErrorLog.setTimeStamp(customerRequestData.getTimeStamp());
+			msErrorLogApiCall(msErrorLog);
+			return new ResponseEntity<CustomerResponse>( commonMethods.getErrorResponse(500, e.getMessage()), HttpStatus.BAD_GATEWAY);
+			
+		}
+		//return responseOfCustomerApi;
+		log.debug("Downstream response: "+responseOfCustomerApi.getBody().toString());
+		if(responseOfCustomerApi.getBody().getResponseCode() == 200){
+			return new  ResponseEntity<CustomerResponse>(commonMethods.getSuccessResponse(responseOfCustomerApi.getBody().getCustomerRequestData()), HttpStatus.OK);
+		}else{
+			return new  ResponseEntity<CustomerResponse>(commonMethods.getErrorResponse(responseOfCustomerApi.getBody().getResponseCode(), responseOfCustomerApi.getBody().getResponseMessage()), HttpStatus.OK);
+		}
+	//	return new  ResponseEntity<CustomerResponse>(commonMethods.getSuccessResponse(responseOfCustomerApi.getBody().getCustomerRequestData()), HttpStatus.OK);
 	}
 
 }

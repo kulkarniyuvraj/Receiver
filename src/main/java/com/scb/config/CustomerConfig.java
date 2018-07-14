@@ -20,6 +20,9 @@ public class CustomerConfig {
 	@Value("${GCG.customerRequestPersist}")
 	private String customerRequestPersistURL;
 	
+	@Value("${GCG.customerValidator}")
+	private String customerValidatorURL;
+	
 	@Value("${GCG.enableAuditLog}")
 	private String isEnableAuditLog;
 

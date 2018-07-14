@@ -10,7 +10,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor @ToString @Builder
-public class AuditLog implements Serializable {
+public class MsAuditLog implements Serializable {
 	
 	private static final long serialVersionUID = -1803780864651956194L;
 	private long uuid;

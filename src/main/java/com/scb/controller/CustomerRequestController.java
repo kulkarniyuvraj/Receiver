@@ -27,12 +27,14 @@ public class CustomerRequestController {
 	public CustomerResponse customerRequestHandle(@RequestBody CustomerRequest customerRequest) {
 		log.info("Request received "+ customerRequest.toString());
 		CustomerResponse customerResponse = new CustomerResponse();
-		if (commonMethods.isValidateCustomerRequest(customerRequest)) {
+		
+		customerResponse = customerRequestService.customerRequestHandleService(customerRequest);
+		/*if (commonMethods.isValidateCustomerRequest(customerRequest)) {
 			customerResponse = customerRequestService.customerRequestHandleService(customerRequest);
 		} else {
 			log.info(" Validation failed");
 			customerResponse = commonMethods.getErrorResponse("Request Validation Error");
-		}
+		}*/
 		log.info("Response: "+customerResponse.toString());
 		return customerResponse;
 	}
@@ -41,7 +43,7 @@ public class CustomerRequestController {
 	public CustomerRequest customerRequestHandleExampleRequest() {
 
 		return CustomerRequest.builder().customerAccType("Saving").customerId(22).customerName("Test Customer")
-				.customerRegion("India").corelationId(200).build();
+				.customerRegion("India").correlationId(200).build();
 		// return
 		// customerRequestService.customerRequestHandleService(customerRequest);
 

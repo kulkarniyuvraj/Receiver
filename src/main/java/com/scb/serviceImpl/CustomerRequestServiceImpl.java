@@ -5,10 +5,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import com.scb.config.CustomerConfig;
 import com.scb.dao.CustomerDataReposatory;
-import com.scb.model.AuditLog;
 import com.scb.model.CustomerRequest;
 import com.scb.model.CustomerRequestData;
 import com.scb.model.CustomerResponse;
+import com.scb.model.MsAuditLog;
 import com.scb.service.CustomerRequestService;
 import com.scb.utils.SCBCommonMethods;
 
@@ -27,13 +27,22 @@ public class CustomerRequestServiceImpl implements CustomerRequestService {
 	@Override
 	public CustomerResponse customerRequestHandleService(CustomerRequest customerRequest) {
 		CustomerRequestData customerRequestData = commonMethods.getCustomerDataFromRequest(customerRequest);
-		ResponseEntity<AuditLog> msAuditLogApiResponse = null;
+		ResponseEntity<MsAuditLog> msAuditLogApiResponse = null;
 		if (propertiesConfig.getIsEnableAuditLog().equalsIgnoreCase("yes")) {
-			AuditLog parseAuditLog = commonMethods.getAuditLogDetails(customerRequestData);
+			MsAuditLog parseAuditLog = commonMethods.getAuditLogDetails(customerRequestData);
 			msAuditLogApiResponse = gcgInternalApiCall.msAuditLogApiCall(parseAuditLog);
 		}
-		ResponseEntity<CustomerResponse> customerResponseFromPersistDb = gcgInternalApiCall
-				.msCustomerPersistApiCall(customerRequestData);
+		
+		ResponseEntity<CustomerResponse> customerResponseFromPersistDb = null;
+		ResponseEntity<CustomerResponse> customerResponseFromvalidator = gcgInternalApiCall.msValidatorCall(customerRequestData);
+		if(customerResponseFromvalidator.getBody().getResponseCode() == 200){
+			customerResponseFromPersistDb = gcgInternalApiCall
+					.msCustomerPersistApiCall(customerRequestData);
+		}else{
+			return customerResponseFromvalidator.getBody();
+		}
+		
+	//	ResponseEntity<CustomerResponse> customerResponseFromPersistDb = gcgInternalApiCall.msCustomerPersistApiCall(customerRequestData);
 		ResponseEntity<CustomerResponse> customerResponseFromDownStream = null;
 		if (customerResponseFromPersistDb.getBody().getResponseCode() == 200) {
 			customerResponseFromDownStream = gcgInternalApiCall

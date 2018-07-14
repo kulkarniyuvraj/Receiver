@@ -8,11 +8,9 @@ import java.io.ObjectOutputStream;
 import java.time.LocalDateTime;
 import java.util.Random;
 
-//import org.hamcrest.text.IsEmptyString;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.HttpStatusCodeException;
 
-import com.scb.model.AuditLog;
+import com.scb.model.MsAuditLog;
 import com.scb.model.CustomerRequest;
 import com.scb.model.CustomerRequestData;
 import com.scb.model.CustomerResponse;
@@ -30,7 +28,7 @@ public class SCBCommonMethods {
 		CustomerRequestData customerDataReposatory = CustomerRequestData.builder()
 				.customerAccType(customerRequest.getCustomerAccType()).customerId(customerRequest.getCustomerId())
 				.customerName(customerRequest.getCustomerName()).customerRegion(customerRequest.getCustomerRegion())
-				.timeStamp(getCurrentDateTime()).corelationId(customerRequest.getCorelationId())
+				.timeStamp(getCurrentDateTime()).correlationId(customerRequest.getCorrelationId())
 				.transactionId(getTransactionId()).build();
 		return customerDataReposatory;
 	}
@@ -45,7 +43,7 @@ public class SCBCommonMethods {
 
 	}
 
-	public CustomerResponse getErrorResponse(int errorCode, String errorMessage) {
+	public CustomerResponse getErrorResponse(long errorCode, String errorMessage) {
 		return CustomerResponse.builder().responseCode(errorCode).responseMessage(errorMessage).build();
 
 	}
@@ -59,7 +57,7 @@ public class SCBCommonMethods {
 			return false;
 		} else if ("USA".equals(customerRequest.getCustomerRegion())) {
 			return false;
-		} else if (customerRequest.getCorelationId() == 0) {
+		} else if (customerRequest.getCorrelationId() == 0) {
 			return false;
 		}
 		return true;
@@ -75,8 +73,8 @@ public class SCBCommonMethods {
 		return uniqueTansactionId;
 	}
 
-	public AuditLog getAuditLogDetails(CustomerRequestData customerRequestData) {
-		AuditLog auditLog = AuditLog.builder().msComponent("Router").payload(toByteArray(customerRequestData)).timeStamp(customerRequestData.getTimeStamp()).uuid(customerRequestData.getTransactionId()).logMessage("Calling from router").build();
+	public MsAuditLog getAuditLogDetails(CustomerRequestData customerRequestData) {
+		MsAuditLog auditLog = MsAuditLog.builder().msComponent("Router").payload(toByteArray(customerRequestData)).timeStamp(customerRequestData.getTimeStamp()).uuid(customerRequestData.getTransactionId()).logMessage("Calling from router").build();
 		return auditLog;
 	}
 

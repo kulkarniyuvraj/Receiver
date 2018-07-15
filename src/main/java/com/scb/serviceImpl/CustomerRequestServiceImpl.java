@@ -50,7 +50,7 @@ public class CustomerRequestServiceImpl implements CustomerRequestService {
 		ResponseEntity<CustomerResponse> customerResponseFromDownStream = null;
 		if (customerResponseFromPersistDb.getBody().getResponseCode() == 200) {
 			
-			if(downstreamProtocol.trim().equalsIgnoreCase("JMS")){
+			if(downstreamProtocol.trim().equalsIgnoreCase("MQ")){
 				log.debug("JMS call ");
 				CustomerRequestData customerRequestDataFromJMS = jmsCorrelationalConfig.send(customerResponseFromPersistDb.getBody().getCustomerRequestData());
 				return commonMethods.getSuccessResponse(customerRequestDataFromJMS, "Successful response from JMS");

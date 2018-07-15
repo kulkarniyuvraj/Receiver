@@ -37,6 +37,11 @@ public class SCBCommonMethods {
 		return CustomerResponse.builder().customerRequestData(customerRequestData).responseCode(200)
 				.responseMessage("Success").build();
 	}
+	
+	public CustomerResponse getSuccessResponse(CustomerRequestData customerRequestData, String responseMessage) {
+		return CustomerResponse.builder().customerRequestData(customerRequestData).responseCode(200)
+				.responseMessage(responseMessage).build();
+	}
 
 	public CustomerResponse getErrorResponse() {
 		return CustomerResponse.builder().responseCode(400).responseMessage("Bad request").build();

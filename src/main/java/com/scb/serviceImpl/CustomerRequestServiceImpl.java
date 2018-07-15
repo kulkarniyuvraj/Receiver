@@ -23,6 +23,8 @@ public class CustomerRequestServiceImpl implements CustomerRequestService {
 	private CustomerConfig propertiesConfig;
 	@Autowired
 	private GcgInternalApiCall gcgInternalApiCall;
+	@Autowired
+	private JMSCorrelationalConfig jmsCorrelationalConfig;
 
 	@Override
 	public CustomerResponse customerRequestHandleService(CustomerRequest customerRequest) {
@@ -35,6 +37,8 @@ public class CustomerRequestServiceImpl implements CustomerRequestService {
 		
 		ResponseEntity<CustomerResponse> customerResponseFromPersistDb = null;
 		ResponseEntity<CustomerResponse> customerResponseFromvalidator = gcgInternalApiCall.msValidatorCall(customerRequestData);
+		String downstreamProtocol = customerResponseFromvalidator.getBody().getResponseMessage();
+		log.debug("Down stream protocol: .."+downstreamProtocol);
 		if(customerResponseFromvalidator.getBody().getResponseCode() == 200){
 			customerResponseFromPersistDb = gcgInternalApiCall
 					.msCustomerPersistApiCall(customerRequestData);
@@ -45,11 +49,24 @@ public class CustomerRequestServiceImpl implements CustomerRequestService {
 	//	ResponseEntity<CustomerResponse> customerResponseFromPersistDb = gcgInternalApiCall.msCustomerPersistApiCall(customerRequestData);
 		ResponseEntity<CustomerResponse> customerResponseFromDownStream = null;
 		if (customerResponseFromPersistDb.getBody().getResponseCode() == 200) {
-			customerResponseFromDownStream = gcgInternalApiCall
-					.msDownStreamCall(customerResponseFromPersistDb.getBody().getCustomerRequestData());
+			
+			if(downstreamProtocol.trim().equalsIgnoreCase("JMS")){
+				log.debug("JMS call ");
+				CustomerRequestData customerRequestDataFromJMS = jmsCorrelationalConfig.send(customerResponseFromPersistDb.getBody().getCustomerRequestData());
+				return commonMethods.getSuccessResponse(customerRequestDataFromJMS, "Successful response from JMS");
+			} else if(downstreamProtocol.trim().equalsIgnoreCase("HTTP")){
+				customerResponseFromDownStream = gcgInternalApiCall
+						.msDownStreamCall(customerResponseFromPersistDb.getBody().getCustomerRequestData());
+			}
+			else{
+				customerResponseFromDownStream = gcgInternalApiCall
+						.msDownStreamCall(customerResponseFromPersistDb.getBody().getCustomerRequestData());
+			}
+			
 		} else {
 			return customerResponseFromPersistDb.getBody();
 		}
+		
 		return  customerResponseFromDownStream.getBody();
 	}
 

@@ -25,5 +25,17 @@ public class CustomerConfig {
 	
 	@Value("${GCG.enableAuditLog}")
 	private String isEnableAuditLog;
+	
+	@Value("${GCG.downstreamCallConfig}")
+	private String downstreamCallConfig;
+	
+	@Value("${GCG.jmsTemplateTimeout}")
+	private int jmsTemplateTimeout;
+	
+	@Value("${GCG.jmsRequestQueue}")
+	private String jmsRequestQueue;
+	
+	@Value("${GCG.jmsResponseQueue}")
+	private String jmsResponseQueue;
 
 }

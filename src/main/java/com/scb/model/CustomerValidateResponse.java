@@ -16,6 +16,7 @@ public class CustomerValidateResponse {
 	private String responseMessage;
 	private boolean isValidRequest;
 	private CustomerRequestData customerRequestData;
+	private String downstream_protocol;
 	
 
 }

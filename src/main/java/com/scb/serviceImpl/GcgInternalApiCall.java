@@ -167,7 +167,7 @@ public class GcgInternalApiCall {
 		//return responseOfCustomerApi;
 		log.debug("Downstream response: "+responseOfCustomerApi.getBody().toString());
 		if(responseOfCustomerApi.getBody().getResponseCode() == 200){
-			return new  ResponseEntity<CustomerResponse>(commonMethods.getSuccessResponse(responseOfCustomerApi.getBody().getCustomerRequestData()), HttpStatus.OK);
+			return new  ResponseEntity<CustomerResponse>(commonMethods.getSuccessResponse(responseOfCustomerApi.getBody().getCustomerRequestData(), responseOfCustomerApi.getBody().getDownstream_protocol()), HttpStatus.OK);
 		}else{
 			return new  ResponseEntity<CustomerResponse>(commonMethods.getErrorResponse(responseOfCustomerApi.getBody().getResponseCode(), responseOfCustomerApi.getBody().getResponseMessage()), HttpStatus.OK);
 		}

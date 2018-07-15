@@ -35,7 +35,8 @@ public class JMSCorrelationalConfig {
 		 * "JMSCorrelationID='" + correlationId + "'");
 		 */
 		//"JMSCorrelationID =	'" + correlationId + "'");
-		String resSelectorId = "JMSCorrelationID = '" + correlationId + "'";
+		String resSelectorId = "JMSCorrelationID = '" + customerRequestData.getCorrelationId() + "'";
+		log.debug("example resSelectorId : "+resSelectorId);
 		CustomerRequestData responseMessage =   (CustomerRequestData) jmsTemplate.receiveSelectedAndConvert(propertiesConfig.getJmsResponseQueue(), resSelectorId);
 		//responseMessage.setDownStreamResponse("Success message from  MQ");
 		return responseMessage;

@@ -53,7 +53,13 @@ public class CustomerRequestServiceImpl implements CustomerRequestService {
 			if(downstreamProtocol.trim().equalsIgnoreCase("MQ")){
 				log.debug("JMS call ");
 				CustomerRequestData customerRequestDataFromJMS = jmsCorrelationalConfig.send(customerResponseFromPersistDb.getBody().getCustomerRequestData());
-				return commonMethods.getSuccessResponse(customerRequestDataFromJMS, "Successful response from MQ");
+				if(customerRequestDataFromJMS==null) {
+					return commonMethods.getErrorResponse("Response from MQ timed out");
+				}
+				else {
+					return commonMethods.getSuccessResponse(customerRequestDataFromJMS, "Successful response from MQ");
+				}
+						
 			} else if(downstreamProtocol.trim().equalsIgnoreCase("HTTP")){
 				customerResponseFromDownStream = gcgInternalApiCall
 						.msDownStreamCall(customerResponseFromPersistDb.getBody().getCustomerRequestData());
